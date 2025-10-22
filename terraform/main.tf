@@ -17,12 +17,19 @@ module "mysql_config_db_rds" {
   aws_region             = var.aws_region
 }
 
-module "bastion" {
-  source            = "./modules/ec2_bastion"
-  vpc_id            = module.network.vpc_id
-  subnet_id         = module.network.public_subnet_id
-  project_name      = "mysql-automation"
-  ssh_public_key    = "~/.ssh/id_ed25519.pub"
-  allowed_ssh_cidrs = ["157.100.139.150/32"] # <----- change later
-}
+# module "bastion" {
+#   source            = "./modules/ec2_bastion"
+#   vpc_id            = module.network.vpc_id
+#   subnet_id         = module.network.public_subnet_id
+#   project_name      = "mysql-automation"
+#   ssh_public_key    = "~/.ssh/id_ed25519.pub"
+#   allowed_ssh_cidrs = ["157.100.139.150/32"] # <----- change later
+# }
 
+module "ec2_bastion" {
+  source            = "./modules/ec2_bastion"
+  subnet_id         = module.network.public_subnet_id
+  security_group_id = module.network.bastion_sg_id
+  key_pair_name     = var.key_pair_name
+  environment       = var.environment
+}

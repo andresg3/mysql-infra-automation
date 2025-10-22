@@ -45,3 +45,14 @@ variable "db_subnet_group_name" {
   type        = string
   default     = null
 }
+
+variable "key_pair_name" {
+  description = "Existing AWS key pair name for SSH access"
+  type        = string
+}
+
+variable "environment" {
+  description = "Deployment environment label"
+  type        = string
+  default     = "dev"
+}

@@ -1,54 +1,28 @@
-data "aws_ami" "amazon_linux" {
-  most_recent = true
-  owners      = ["amazon"]
-
-  filter {
-    name   = "name"
-    values = ["al2023-ami-*-x86_64"]
-  }
-}
-
-resource "aws_key_pair" "dbadmin_key" {
-  key_name   = "${var.project_name}-key"
-  public_key = file(var.ssh_public_key)
-}
-
-resource "aws_security_group" "bastion_sg" {
-  name        = "${var.project_name}-bastion-sg"
-  description = "Allow SSH access to bastion host"
-  vpc_id      = var.vpc_id
-
-  ingress {
-    description = "SSH Access"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = var.allowed_ssh_cidrs
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "${var.project_name}-bastion-sg"
-  }
-}
+###############################################
+# ec2_bastion/main.tf
+# AlmaLinux 9 Bastion Host (dbadmin)
+###############################################
 
 resource "aws_instance" "bastion" {
-  ami                         = data.aws_ami.amazon_linux.id
-  instance_type               = "t3.micro"
+  ami           = "ami-0347d3ff408d5ff53" # AlmaLinux 9 x86_64 us-east-1
+  instance_type = "t2.micro"              # Free-tier eligible
+  key_name      = var.key_pair_name
+
   subnet_id                   = var.subnet_id
-  vpc_security_group_ids      = [aws_security_group.bastion_sg.id]
-  key_name                    = aws_key_pair.dbadmin_key.key_name
+  vpc_security_group_ids      = [var.security_group_id]
   associate_public_ip_address = true
 
   tags = {
-    Name    = "dbadmin"
-    Project = var.project_name
-    Role    = "bastion"
+    Name        = "dbadmin"
+    Environment = var.environment
+    Owner       = "DBA Team"
+    Project     = "mysql-infra-automation"
   }
+
+  # Ensure SSH starts automatically
+  user_data = <<-EOF
+    #!/bin/bash
+    systemctl enable sshd
+    systemctl start sshd
+  EOF
 }
