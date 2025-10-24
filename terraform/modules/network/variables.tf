@@ -20,6 +20,12 @@ variable "private_subnet_b_cidr" {
   default     = "10.0.2.0/24"
 }
 
+variable "public_subnet_a_cidr" {    # Public
+  description = "CIDR block for public subnet A (bastion)"
+  type        = string
+  default     = "10.0.0.0/24"
+}
+
 variable "allowed_cidrs" {
   description = "List of CIDR blocks allowed to access MySQL"
   type        = list(string)
@@ -30,10 +36,4 @@ variable "project_name" {
   description = "Name prefix for tagging"
   type        = string
   default     = "mysql-demo"
-}
-
-variable "public_subnet_a_cidr" {
-  description = "CIDR block for public subnet A (bastion)"
-  type        = string
-  default     = "10.0.0.0/24"
 }

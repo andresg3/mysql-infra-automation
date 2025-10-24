@@ -1,8 +1,3 @@
-###############################################
-# ec2_bastion/main.tf
-# AlmaLinux 9 Bastion Host (dbadmin)
-###############################################
-
 resource "aws_instance" "bastion" {
   ami           = "ami-0347d3ff408d5ff53" # AlmaLinux 9 x86_64 us-east-1
   instance_type = "t2.micro"              # Free-tier eligible

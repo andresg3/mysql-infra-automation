@@ -1,7 +1,3 @@
-###############################################
-# ec2_bastion/variables.tf
-###############################################
-
 variable "subnet_id" {
   description = "Public subnet ID where the bastion host will be launched"
   type        = string
